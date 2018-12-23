@@ -26,7 +26,7 @@ class FormulaCell():
 
 
     def expandRange(self, input): #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
-        p = re.compile('[A-Z]+[1-9]+[:][A-Z]+[1-9]+')
+        p = re.compile('[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*')
         matches = p.finditer(input)
         result = []
         prev = 0
@@ -47,7 +47,7 @@ class FormulaCell():
     def addCalls(self, input):
         #input = self.expandRange(input) #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
 
-        p = re.compile('[A-Z]+[1-90-9]+')
+        p = re.compile('[A-Z]+[1-9][0-9]*')
         matches = p.finditer(input) #if matches is empty then it's just a purely numerical expression --> put it in a number cell
 
         result = []
