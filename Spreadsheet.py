@@ -42,12 +42,14 @@ class FormulaCell():
             letters_int = [self._sheet.colNameToInt(l) for l in letters]
             numbers = [int(match_string[match_numbers.start():match_numbers.end()]) for match_numbers in
                        matches_numbers]
-
+            result.append('[')
             for i in range(letters_int[0], letters_int[1] + 1):
                 for j in range(numbers[0], numbers[1] + 1):
                     result.append(self._sheet.intToColName(i) + str(j))
                     if not (i == letters_int[1] and j == numbers[1]):
                         result.append(', ')
+                    else:
+                        result.append(']')
             prev = match.end()
 
         result.append(input[prev:])
@@ -58,7 +60,7 @@ class FormulaCell():
     # so A1 => self.lookup('A1')
     # A1 + B1 => self.lookup('A1') + self.lookup('B1')
     def addCalls(self, input):
-        #input = self.expandRange(input) #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
+        input = self.expandRanges(input)
 
         p = re.compile('[A-Z]+[1-9][0-9]*')
         matches = p.finditer(input) #if matches is empty then it's just a purely numerical expression --> put it in a number cell
@@ -105,7 +107,7 @@ class Sheet(object):
         letters = [coordinate_string[match_letters.start():match_letters.end()] for match_letters in matches_letters]
         letters_int = [self.colNameToInt(l) for l in letters]
         numbers = [int(coordinate_string[match_numbers.start():match_numbers.end()]) for match_numbers in matches_numbers]
-        self.updateValue(numbers[0], letters_int[0], newValue)
+        self.updateValue(numbers[0] - 1, letters_int[0], newValue)
 
 
     def updateValue(self, row, col, newValue):

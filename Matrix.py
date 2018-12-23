@@ -37,7 +37,7 @@ class Matrix(object):
             result.append(self.intToColName(i) + '\t')
         result.append('\n')
         for rowNr in range(len(self.data)):
-            result.append(str(rowNr))
+            result.append(str(rowNr + 1))
             result.append('\t')
             for cell in self.data[rowNr]:
                 result.append(str(cell))

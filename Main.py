@@ -1,9 +1,12 @@
 from Spreadsheet import Sheet
 
 s = Sheet(30, 30)
-s.updateValue(0, 0, "7")
-s.updateValue(0, 1, "5")
-s.updateValue2('AB10', "21")
+s.updateValue2("A1", "7") #TODO There is a bug in the row numbers, shifted by 1
+s.updateValue2("B2", "5")
+s.updateValue2("A2", "21") #TODO: ranges in the coordinates of updateValue2()
+s.updateValue2("A3", "23")
+s.updateValue2("A4", "7")
+s.updateValue2("A5", "=sum(A1:A4)")
 '''
 s.updateValue(1, 0, "(3+4)*2")
 s.updateValue(2, 0, "=A1+B1")
