@@ -39,13 +39,13 @@ class FormulaCell():
             matches_letters = p_letters.finditer(match_string)
             matches_numbers = p_numbers.finditer(match_string)
             letters = [match_string[match_letters.start():match_letters.end()] for match_letters in matches_letters]
-            letters_int = [self._sheet.rowNameToInt(l) for l in letters]
+            letters_int = [self._sheet.colNameToInt(l) for l in letters]
             numbers = [int(match_string[match_numbers.start():match_numbers.end()]) for match_numbers in
                        matches_numbers]
-            print letters_int, numbers
+
             for i in range(letters_int[0], letters_int[1] + 1):
                 for j in range(numbers[0], numbers[1] + 1):
-                    result.append(self._sheet.intToRowName(i) + str(j))
+                    result.append(self._sheet.intToColName(i) + str(j))
                     if not (i == letters_int[1] and j == numbers[1]):
                         result.append(', ')
             prev = match.end()
@@ -95,6 +95,19 @@ class Sheet(object):
             for col in range(self.cols):
                 self.updateValue(row, col, "0")
 
+
+    def updateValue2(self, coordinate_string, newValue): #coordinate_string should be something like A5
+        p_letters = re.compile('[A-Z]+')
+        p_numbers = re.compile('[1-9][0-9]*')
+
+        matches_letters = p_letters.finditer(coordinate_string)
+        matches_numbers = p_numbers.finditer(coordinate_string)
+        letters = [coordinate_string[match_letters.start():match_letters.end()] for match_letters in matches_letters]
+        letters_int = [self.colNameToInt(l) for l in letters]
+        numbers = [int(coordinate_string[match_numbers.start():match_numbers.end()]) for match_numbers in matches_numbers]
+        self.updateValue(numbers[0], letters_int[0], newValue)
+
+
     def updateValue(self, row, col, newValue):
         if newValue.isdigit():
             cellObject = NumberCell(newValue)
@@ -109,14 +122,14 @@ class Sheet(object):
 
     # A => 0
 
-    def rowNameToInt(self, name):
+    def colNameToInt(self, name):
         result = 0
         for i in range(len(name)):
             result += (ord(name[i]) - 65 + 1) * 26 ** (len(name) - 1 - i)
 
         return result - 1
 
-    def intToRowName(self, x):
+    def intToColName(self, x):
         uppercases = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # 0 = A, 25 = Z
         result = []
         if x >= 0:
@@ -137,8 +150,8 @@ class Sheet(object):
         to = matches.end()
         letters = x[:to]
         digits = x[to:]
-        col = int(digits) - 1  # for 0 based matrix index
-        row = self.rowNameToInt(letters)
+        row = int(digits) - 1  # for 0 based matrix index
+        col = self.colNameToInt(letters)
         cell = self.matrix.getElementAt(row, col)
         return cell.value
 
