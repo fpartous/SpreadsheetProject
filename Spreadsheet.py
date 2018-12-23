@@ -102,12 +102,20 @@ class Sheet(object):
             result += (ord(name[i]) - 65 + 1) * 26 ** (len(name) - 1 - i)
 
         return result - 1
-    '''
+
     def intToRowName(self, x):
-        result = ''
-        i = x
-        while i > 0:
-    '''
+        uppercases = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # 0 = A, 25 = Z
+        result = []
+        if x >= 0:
+            rest = x % 26
+            x = (x // 26)
+            result.insert(0, uppercases[rest])  # prepend the uppercase letter to the resulting list
+        while x > 0:
+            rest = x % 26
+            x = (x // 26)
+            result.insert(0, uppercases[rest - 1])  # prepend the uppercase letter to the resulting list
+        resultString = ''.join(result)
+        return resultString
 
 
     def lookup(self, x):

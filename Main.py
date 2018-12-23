@@ -1,5 +1,6 @@
 from Spreadsheet import Sheet
 
+
 s = Sheet(30, 30)
 s.updateValue(0, 0, "7")
 s.updateValue(0, 1, "5")
@@ -15,8 +16,15 @@ s.updateValue(0, 3, "66")
 s.updateValue(0, 0, "sum([A2, A3, A4, A5])")
 s.updateValue(0, 0, "average([A2, A3, A4, A5])")
 
-
 print(s)
+
+
+
+
+
+print intToRowName(53)
+
+
 
 
 
