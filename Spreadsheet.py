@@ -25,16 +25,29 @@ class FormulaCell():
 
 
 
-    def expandRange(self, input): #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
-        p = re.compile('[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*')
-        matches = p.finditer(input)
+    def expandRanges(self, input): #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
+        p_ranges = re.compile('[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*')
+        p_letters = re.compile('[A-Z]+')
+        p_numbers = re.compile('[1-9][0-9]*')
+        matches = p_ranges.finditer(input)
         result = []
         prev = 0
         for match in matches:
             result.append(input[prev:match.start()])
-            result.append('self._sheet.lookup(\'')
-            result.append(input[match.start():match.end()])
-            result.append('\')')
+            match_string = input[match.start():match.end()]
+
+            matches_letters = p_letters.finditer(match_string)
+            matches_numbers = p_numbers.finditer(match_string)
+            letters = [match_string[match_letters.start():match_letters.end()] for match_letters in matches_letters]
+            letters_int = [self._sheet.rowNameToInt(l) for l in letters]
+            numbers = [int(match_string[match_numbers.start():match_numbers.end()]) for match_numbers in
+                       matches_numbers]
+            print letters_int, numbers
+            for i in range(letters_int[0], letters_int[1] + 1):
+                for j in range(numbers[0], numbers[1] + 1):
+                    result.append(self._sheet.intToRowName(i) + str(j))
+                    if not (i == letters_int[1] and j == numbers[1]):
+                        result.append(', ')
             prev = match.end()
 
         result.append(input[prev:])
