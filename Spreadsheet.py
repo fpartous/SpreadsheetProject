@@ -3,28 +3,37 @@ from Matrix import Matrix
 from math import *
 
 
-class NumberCell():
-    def __init__(self, x):
+class NumberCell(object):
+    def __init__(self, x, coordinates):
         self.value = int(x)
+        self.coordinates = coordinates
 
     def __str__(self):
         return str(self.value)
 
+    def updateValue(self):
+        print self.coordinates, " got updated"
+        return True
 
-class FormulaCell():
-    def __init__(self, expr, sheet):  # expr is of the shape "=A1+B2" in string
+
+class FormulaCell(object):
+    def __init__(self, expr, sheet, coordinates):  # expr is of the shape "=A1+B2" in string
         self._sheet = sheet
         self.formula = expr
-        self.updateValue()
         self.ListOfDependencies = []    # List of cells upon which the current cell depends
+        self.createDependencyList()
+        self.coordinates = coordinates
+        self.updateValue()
 
     def updateValue(self):
+        for coord in self.ListOfDependencies: # make sure all cells this one depends on update their values first
+            cellObj = self._sheet.getCellObject(coord[0], coord[1])
+            cellObj.updateValue() # TODO: implement visited list and check for self referential loops
         if(self.formula[0] == "="):
             self.value = eval(self.addCalls(self.formula[1:]))
         else:
             self.value = eval(self.addCalls(self.formula[0:]))
-
-    # self.updateDependencyList(self.expandRanges(self.formula[0:])) TODO: finish this dependency list code
+        print self.coordinates, " got updated"
 
     def createDependencyList(self):  # look for all dependencies in the formula
         input = self.formula[0:]
@@ -36,8 +45,6 @@ class FormulaCell():
             coordinates = self._sheet.coordstringToRowCol(coordinate_string)
             if coordinates not in self.ListOfDependencies: #look if these coordinates are already is the list of dependencies. If not, add them
                 self.ListOfDependencies.append(coordinates)
-
-
 
     def expandRanges(self, input):  # expand the ranges(eg: A1:A5 --> A1, A2, A3, A4, A5)
         p_ranges = re.compile('[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*')
@@ -95,6 +102,7 @@ class FormulaCell():
     def __str__(self):
         self.updateValue()
         return str(self.value)
+
 def average(list):
     sum = 0.
     for el in list:
@@ -128,11 +136,9 @@ class Sheet(object):
 
     def updateValue(self, row, col, newValue):
         if newValue.isdigit():
-            cellObject = NumberCell(newValue)
+            cellObject = NumberCell(newValue, [row, col])
         else:
-            cellObject = FormulaCell(newValue, self)
-            cellObject.createDependencyList()
-            print cellObject.ListOfDependencies
+            cellObject = FormulaCell(newValue, self, [row, col])
         self.matrix.setElementAt(row, col, cellObject)
 
         # self.checkAllDependenciesForUpdates()
@@ -140,7 +146,8 @@ class Sheet(object):
         # lookup the value of a given cell.
         # x = A1, B22, AB33 ...
 
-    # A => 0
+    def getCellObject(self, row, col): #get the NumberCell or Formulacell object at the given coordinates
+        return self.matrix.getElementAt(row, col)
 
     def colNameToInt(self, name):
         result = 0
@@ -162,7 +169,6 @@ class Sheet(object):
             result.insert(0, uppercases[rest - 1])  # prepend the uppercase letter to the resulting list
         resultString = ''.join(result)
         return resultString
-
 
     def lookup(self, x):
         p = re.compile('[A-Z]+')
