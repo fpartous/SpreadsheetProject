@@ -16,6 +16,7 @@ class FormulaCell():
         self._sheet = sheet
         self.formula = expr
         self.updateValue()
+        self.ListOfDependencies = []    # List of cells upon which the current cell depends
 
     def updateValue(self):
         if(self.formula[0] == "="):
@@ -23,9 +24,22 @@ class FormulaCell():
         else:
             self.value = eval(self.addCalls(self.formula[0:]))
 
+    # self.updateDependencyList(self.expandRanges(self.formula[0:])) TODO: finish this dependency list code
+
+    def createDependencyList(self):  # look for all dependencies in the formula
+        input = self.formula[0:]
+        self.ListOfDependencies = [] # first empty the list, will then be refilled
+        p = re.compile('[A-Z]+[1-9][0-9]*')
+        matches = p.finditer(input)
+        for match in matches:
+            coordinate_string = input[match.start():match.end()]
+            coordinates = self._sheet.coordstringToRowCol(coordinate_string)
+            if coordinates not in self.ListOfDependencies: #look if these coordinates are already is the list of dependencies. If not, add them
+                self.ListOfDependencies.append(coordinates)
 
 
-    def expandRanges(self, input): #expand the ranges (eg: A1:A5 --> A1, A2, A3, A4, A5)
+
+    def expandRanges(self, input):  # expand the ranges(eg: A1:A5 --> A1, A2, A3, A4, A5)
         p_ranges = re.compile('[A-Z]+[1-9][0-9]*[:][A-Z]+[1-9][0-9]*')
         p_letters = re.compile('[A-Z]+')
         p_numbers = re.compile('[1-9][0-9]*')
@@ -97,8 +111,7 @@ class Sheet(object):
             for col in range(self.cols):
                 self.updateValue(row, col, "0")
 
-
-    def updateValue2(self, coordinate_string, newValue): #coordinate_string should be something like A5
+    def coordstringToRowCol(self, coordinate_string): #input is for example AB12, output is then [12, 27]
         p_letters = re.compile('[A-Z]+')
         p_numbers = re.compile('[1-9][0-9]*')
 
@@ -107,16 +120,21 @@ class Sheet(object):
         letters = [coordinate_string[match_letters.start():match_letters.end()] for match_letters in matches_letters]
         letters_int = [self.colNameToInt(l) for l in letters]
         numbers = [int(coordinate_string[match_numbers.start():match_numbers.end()]) for match_numbers in matches_numbers]
-        self.updateValue(numbers[0] - 1, letters_int[0], newValue)
+        return [numbers[0] - 1, letters_int[0]]
 
+    def updateValue2(self, coordinate_string, newValue): #coordinate_string should be something like A5
+        result = self.coordstringToRowCol(coordinate_string)
+        self.updateValue(result[0], result[1], newValue)
 
     def updateValue(self, row, col, newValue):
         if newValue.isdigit():
             cellObject = NumberCell(newValue)
         else:
             cellObject = FormulaCell(newValue, self)
-
+            cellObject.createDependencyList()
+            print cellObject.ListOfDependencies
         self.matrix.setElementAt(row, col, cellObject)
+
         # self.checkAllDependenciesForUpdates()
 
         # lookup the value of a given cell.
