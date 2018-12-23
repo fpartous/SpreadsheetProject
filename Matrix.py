@@ -16,12 +16,32 @@ class Matrix(object):
     def getElementAt(self, x, y):
         return self.data[x][y]
 
+    def intToColName(self, x):
+        uppercases = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # 0 = A, 25 = Z
+        result = []
+        if x >= 0:
+            rest = x % 26
+            x = (x // 26)
+            result.insert(0, uppercases[rest])  # prepend the uppercase letter to the resulting list
+        while x > 0:
+            rest = x % 26
+            x = (x // 26)
+            result.insert(0, uppercases[rest - 1])  # prepend the uppercase letter to the resulting list
+        resultString = ''.join(result)
+        return resultString
+
     def __str__(self):
         result = []
-        for row in self.data:
-            for cell in row:
+        result.append('\t')
+        for i in range(self.width):
+            result.append(self.intToColName(i) + '\t')
+        result.append('\n')
+        for rowNr in range(len(self.data)):
+            result.append(str(rowNr + 1))
+            result.append('\t')
+            for cell in self.data[rowNr]:
                 result.append(str(cell))
-                result.append(" ")
+                result.append("\t")
             result.append("\n")
         string = ''.join(result)
         return string
