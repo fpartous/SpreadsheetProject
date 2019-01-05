@@ -12,7 +12,7 @@ class NumberCell(object):
         return str(self.value)
 
     def updateValue(self):
-        print self.coordinates, " got updated"
+        print(self.coordinates, " got updated")
         return True
 
 
@@ -33,7 +33,7 @@ class FormulaCell(object):
             self.value = eval(self.addCalls(self.formula[1:]))
         else:
             self.value = eval(self.addCalls(self.formula[0:]))
-        print self.coordinates, " got updated"
+        print(self.coordinates, " got updated")
 
     def createDependencyList(self):  # look for all dependencies in the formula
         input = self.formula[0:]
@@ -169,6 +169,18 @@ class Sheet(object):
             result.insert(0, uppercases[rest - 1])  # prepend the uppercase letter to the resulting list
         resultString = ''.join(result)
         return resultString
+
+    def getRows(self):
+        return self.rows
+
+    def getCols(self):
+        return self.cols
+
+    def getValue(self, row, col):
+        return self.matrix.getElementAt(row, col)
+
+    def getData(self):
+        return self.matrix.data
 
     def lookup(self, x):
         p = re.compile('[A-Z]+')
