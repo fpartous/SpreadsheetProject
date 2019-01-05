@@ -12,7 +12,7 @@ class NumberCell(object):
         return str(self.value)
 
     def updateValue(self):
-        print(self.coordinates, " got updated")
+        #print(self.coordinates, " got updated")
         return True
 
 
@@ -33,7 +33,7 @@ class FormulaCell(object):
             self.value = eval(self.addCalls(self.formula[1:]))
         else:
             self.value = eval(self.addCalls(self.formula[0:]))
-        print(self.coordinates, " got updated")
+        #print(self.coordinates, " got updated")
 
     def createDependencyList(self):  # look for all dependencies in the formula
         input = self.formula[0:]
@@ -114,11 +114,14 @@ class Sheet(object):
         self.rows = rows
         self.cols = cols
         self.matrix = Matrix(rows, cols)
+        self.undoStack = []
+        self.redoStack = []
         # fill the sheet with zero numbercells
         for row in range(self.rows):
             for col in range(self.cols):
                 self.updateValue(row, col, "0")
-
+        self.undoStack = []
+        self.redoStack = []
     def coordstringToRowCol(self, coordinate_string): #input is for example AB12, output is then [12, 27]
         p_letters = re.compile('[A-Z]+')
         p_numbers = re.compile('[1-9][0-9]*')
@@ -129,12 +132,51 @@ class Sheet(object):
         letters_int = [self.colNameToInt(l) for l in letters]
         numbers = [int(coordinate_string[match_numbers.start():match_numbers.end()]) for match_numbers in matches_numbers]
         return [numbers[0] - 1, letters_int[0]]
+    def undo(self):
+        if len(self.undoStack) != 0:
+            prev = self.undoStack.pop()
+            if(prev[0] == "updateValue"):
+                row = prev[1]
+                col = prev[2]
+                cellObject = prev[3]
+                self.redoStack.append(["updateValue", row, col,  self.matrix.getElementAt(row, col)])
+                self.matrix.setElementAt(row, col, cellObject)
+            if(prev[0] == "searchAndReplace"):
+                amount = prev[1]
+                while amount > 0:
+                    self.undo()
+                    amount -= 1
+                self.redoStack.append(["searchAndReplace", prev[1]])
+            return True
+        else:
+            return False
+    def redo(self):
+        if len(self.redoStack) != 0:
+            prev = self.redoStack.pop()
+            if (prev[0] == "updateValue"):
+                row = prev[1]
+                col = prev[2]
+                cellObject = prev[3]
+                self.undoStack.append(["updateValue", row, col,  self.matrix.getElementAt(row, col)])
+                self.matrix.setElementAt(row, col, cellObject)
+            if (prev[0] == "searchAndReplace"):
+                amount = prev[1]
+                print amount
+                while amount > 0:
+                    self.redo()
+                    amount -= 1
+                self.undoStack.append(["searchAndReplace", prev[1]])
+            return True
+        else:
+            return False
 
     def updateValue2(self, coordinate_string, newValue): #coordinate_string should be something like A5
         result = self.coordstringToRowCol(coordinate_string)
         self.updateValue(result[0], result[1], newValue)
 
     def updateValue(self, row, col, newValue):
+        self.undoStack.append(["updateValue", row, col,  self.matrix.getElementAt(row, col)]) #push the previous value of this cell into the undoStack
+        self.redoStack = [] #once you change a value you can no longer redo()
         if newValue.isdigit():
             cellObject = NumberCell(newValue, [row, col])
         else:
@@ -145,6 +187,20 @@ class Sheet(object):
 
         # lookup the value of a given cell.
         # x = A1, B22, AB33 ...
+
+    def searchAndReplace(self, searchInt, replacementInt):
+        amount = 0
+        for row in range(self.rows):
+            for col in range(self.cols):
+                cellObject = self.matrix.getElementAt(row, col)
+                try:
+                    if cellObject.value == searchInt:
+                        self.updateValue(row, col, str(replacementInt))
+                        amount += 1
+                except:
+                    pass #Do nothing
+        if amount > 0:
+            self.undoStack.append(["searchAndReplace", amount])
 
     def getCellObject(self, row, col): #get the NumberCell or Formulacell object at the given coordinates
         return self.matrix.getElementAt(row, col)
@@ -194,5 +250,6 @@ class Sheet(object):
         return cell.value
 
     def __str__(self):
+        print "undo's: ", len(self.undoStack), " redo's: ", len(self.redoStack)
         return self.matrix.__str__()
 
