@@ -1,14 +1,20 @@
-import tkinter as tk
-from tkinter import ttk
-import tkinter.font as tkFont
+try:
+    import Tkinter as tk
+    from ttk import *
+    import tkFont
+except:
+    import tkinter as tk
+    from tkinter import ttk
+    import tkinter.font as tkFont
 from Spreadsheet import Sheet
+
 
 
 class Table(tk.Frame):
     def __init__(self, parent, sheet, height, title=""):
         tk.Frame.__init__(self, parent)
         self._title = tk.Label(self, text=title, background="#ECCCCE", font=("Helvetica", 16))
-        self._tree = ttk.Treeview(self, height=height, show="headings")
+        self._tree = Treeview(self, height=height, show="headings")
         self._widgets = []
         self.sheet = sheet
         self.showTable()
