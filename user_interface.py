@@ -1,6 +1,11 @@
-import tkinter as tk
-from tkinter import ttk
-import tkinter.font as tkFont
+try:
+    import Tkinter as tk
+    from ttk import *
+    import tkFont
+except:
+    import tkinter as tk
+    from tkinter import ttk
+    import tkinter.font as tkFont
 from Spreadsheet import Sheet
 
 
