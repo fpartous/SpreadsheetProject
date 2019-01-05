@@ -13,7 +13,10 @@ class Table(tk.Frame):
     def __init__(self, parent, sheet, height, title=""):
         tk.Frame.__init__(self, parent)
         self._title = tk.Label(self, text=title, background="#ECCCCE", font=("Helvetica", 16))
-        self._tree = ttk.Treeview(self, height=height, show="headings")
+        try:
+            self._tree = Treeview(self, height=height, show="headings")
+        except:
+            self._tree = ttk.Treeview(self, height=height, show="headings")
         self._widgets = []
         self.sheet = sheet
         self.showTable()
