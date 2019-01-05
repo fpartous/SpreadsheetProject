@@ -9,7 +9,6 @@ except:
 from Spreadsheet import Sheet
 
 
-
 class Table(tk.Frame):
     def __init__(self, parent, sheet, height, title=""):
         tk.Frame.__init__(self, parent)
@@ -25,11 +24,11 @@ class Table(tk.Frame):
     def showTable(self):
         current_row = []
         headers_some = [self.sheet.intToColName(i) for i in range(self.sheet.getCols())]
-        i = 0;
+        i = 0
         for header in headers_some:
             label = tk.Label(self, text="%s" % header, borderwidth=3, width=10)
             label.grid(row=2, column=i+1, padx=1, pady=1)
-            i+=1
+            i += 1
             current_row.append(label)
         self._widgets.append(current_row)
 
@@ -40,7 +39,7 @@ class Table(tk.Frame):
             label = tk.Label(self, text="%s" % j, borderwidth=0, width=10)
             label.grid(row=row + 2, column=0, padx=1, pady=1)
             current_row.append(label)
-            j+=1
+            j += 1
             for column in range(self.sheet.getCols()):
                 label = tk.Label(self, text="%s" % self.sheet.getValue(row-1, column), borderwidth=0, width=10)
                 label.grid(row=row+3-1, column=column+1, padx=1, pady=1)
@@ -52,26 +51,34 @@ class Table(tk.Frame):
         widget.configure(text=value)
 
 
-class Test(tk.Tk):
-    def __init__(self):
+class RunInterface(tk.Tk):
+    def __init__(self, h, w):
         tk.Tk.__init__(self)
-        self.sheet = Sheet(30, 4)
+        self.sheet = Sheet(h, w)
         self.font = tkFont.Font(weight='bold')
         self.cell_label = tk.Label(self, text="Cell:", font=self.font)
         self.cell_input = tk.Entry(self, textvariable="", width=30)
         self.formula_label = tk.Label(self, text="Formula:", font=self.font)
         self.formula_input = tk.Entry(self, textvariable="", width=30)
         self.button_run = tk.Button(self, text="Run", command=self.run_sheet, height=2, width=8)
+        self.file_label = tk.Label(self, text="File:", font=self.font)
+        self.file_input = tk.Entry(self, textvariable="", width=60)
+        self.button_import = tk.Button(self, text="Import", command=self.import_file, height=2, width=8)
+        self.button_export = tk.Button(self, text="Export", command=self.export_file, height=2, width=8)
         self.starting()
         self.sheet_table = Table(self, self.sheet, height=self.sheet.getRows(), title="Sheet")
-        self.ventanas()
+        self.show_grid()
 
-    def ventanas(self):
+    def show_grid(self):
         self.cell_label.grid(row=0, column=1, sticky=tk.W)
         self.formula_label.grid(row=0, column=2, sticky=tk.W)
         self.cell_input.grid(row=1, column=1, sticky=tk.W)
         self.formula_input.grid(row=1, column=2, sticky=tk.W)
-        self.button_run.grid(row=0, column=3, rowspan=2)
+        self.button_run.grid(row=0, column=3, rowspan=2, sticky=tk.S)
+        self.file_label.grid(row=2, column=1, sticky=tk.W)
+        self.file_input.grid(row=3, column=1, sticky=tk.W, columnspan=2)
+        self.button_import.grid(row=2, column=3, rowspan=2, sticky=tk.S)
+        self.button_export.grid(row=2, column=4, rowspan=2, sticky=tk.S)
         self.sheet_table.grid(row=4, column=1, columnspan=4)
 
     def starting(self):
@@ -92,6 +99,11 @@ class Test(tk.Tk):
         # x.updateValueCoord('D4', '=sum(A1:B3)')
         self.sheet.updateValue2('A1', '2')
 
+    def starting_1(self, rows, cols, data):
+        for i in range(rows):
+            for j in range(cols):
+                self.sheet.updateValue(i, j, data[i][j])
+
     def run_sheet(self):
         cell = self.cell_input.get()
         cell_split = cell.split(',')
@@ -106,8 +118,12 @@ class Test(tk.Tk):
             self.sheet.updateValue2(cell, formula)
             self.sheet_table.showTable()
 
+    def import_file(self):
+        self.sheet.reading_file(self.file_input.get())
 
+    def export_file(self):
+        self.sheet.writing_csv_file(self.file_input.get())
 
-if __name__ == "__main__":
-    app = Test()
-    app.mainloop()
+# if __name__ == "__main__":
+#     app = RunInterface()
+#     app.mainloop()
