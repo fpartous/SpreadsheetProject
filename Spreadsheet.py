@@ -7,6 +7,7 @@ class NumberCell(object):
     def __init__(self, x, coordinates):
         self.value = int(x)
         self.coordinates = coordinates
+        self.cellType = "NumberCell"
 
     def __str__(self):
         return str(self.value)
@@ -24,6 +25,7 @@ class FormulaCell(object):
         self.createDependencyList()
         self.coordinates = coordinates
         self.updateValue()
+        self.cellType = "FormulaCell"
 
     def updateValue(self):
         for coord in self.ListOfDependencies: # make sure all cells this one depends on update their values first
@@ -193,12 +195,10 @@ class Sheet(object):
         for row in range(self.rows):
             for col in range(self.cols):
                 cellObject = self.matrix.getElementAt(row, col)
-                try:
-                    if cellObject.value == searchInt:
-                        self.updateValue(row, col, str(replacementInt))
-                        amount += 1
-                except:
-                    pass #Do nothing
+                if cellObject.cellType == "NumberCell" and cellObject.value == searchInt:
+                    self.updateValue(row, col, str(replacementInt))
+                    amount += 1
+
         if amount > 0:
             self.undoStack.append(["searchAndReplace", amount])
 
