@@ -1,4 +1,4 @@
-from user_interface import RunInterface
+from bridge import Run
 
 '''
 s = Sheet(30, 30)
@@ -21,9 +21,10 @@ s.updateValue(0, 0, "sum([A2, A3, A4, A5])")
 s.updateValue(0, 0, "average([A2, A3, A4, A5])")
 '''
 # print(s)
-if __name__ == "__main__":
-    app = RunInterface(30, 4)
-    app.mainloop()
+# if __name__ == "__main__":
+#     app = Run.create_sheet(30, 4)
+#     app.mainloop()
+Run(30, 4)
 
 
 

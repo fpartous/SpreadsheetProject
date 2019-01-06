@@ -6,7 +6,6 @@ except:
     import tkinter as tk
     from tkinter import ttk
     import tkinter.font as tkFont
-from Spreadsheet import Sheet
 
 
 class Table(tk.Frame):
@@ -52,9 +51,10 @@ class Table(tk.Frame):
 
 
 class RunInterface(tk.Tk):
-    def __init__(self, h, w):
+    def __init__(self, parent, sheet):
         tk.Tk.__init__(self)
-        self.sheet = Sheet(h, w)
+        self.sheet = sheet
+        self.parent = parent
         self.font = tkFont.Font(weight='bold')
         self.cell_label = tk.Label(self, text="Cell:", font=self.font)
         self.cell_input = tk.Entry(self, textvariable="", width=30)
@@ -65,7 +65,7 @@ class RunInterface(tk.Tk):
         self.file_input = tk.Entry(self, textvariable="", width=60)
         self.button_import = tk.Button(self, text="Import", command=self.import_file, height=2, width=8)
         self.button_export = tk.Button(self, text="Export", command=self.export_file, height=2, width=8)
-        self.starting()
+        # self.starting()
         self.sheet_table = Table(self, self.sheet, height=self.sheet.getRows(), title="Sheet")
         self.show_grid()
 
@@ -119,10 +119,10 @@ class RunInterface(tk.Tk):
             self.sheet_table.showTable()
 
     def import_file(self):
-        self.sheet.reading_file(self.file_input.get())
+        self.parent.reading_file(self.file_input.get())
 
     def export_file(self):
-        self.sheet.writing_csv_file(self.file_input.get())
+        self.parent.writing_csv_file(self.file_input.get())
 
 # if __name__ == "__main__":
 #     app = RunInterface()

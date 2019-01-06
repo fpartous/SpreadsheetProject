@@ -1,8 +1,6 @@
 import re
 from Matrix import Matrix
 from math import *
-import csv
-# from bridge import Run
 
 
 class NumberCell(object):
@@ -194,64 +192,6 @@ class Sheet(object):
         col = self.colNameToInt(letters)
         cell = self.matrix.getElementAt(row, col)
         return cell.value
-
-    def open_matrix_text(self, path):
-        file = list()
-        file1 = open(path, 'r')
-        text = file1.readlines()
-        for row in text:
-            column = row.split()
-            file.append(column)
-        file1.close()
-        return file
-
-    def writing_csv_file(self, path):
-        file = open(path, 'w')
-        file_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for row in self.matrix.data:
-            value = []
-            for column in row:
-                value.append(column)
-            file_writer.writerow(value)
-        file.close()
-
-    def reading_file(self, path):
-        file = open(path, 'r', encoding='utf-8-sig')
-        # text = file.readlines()
-        list1 = list()
-        list_temp = list()
-        i = 0
-        j = 0
-        for row in file:
-            row = row.strip()
-            column = row.split(';')
-            list_temp = []
-            i += 1
-            j = len(column)
-            for value in column:
-                if value == '':
-                    value = '0'
-                # else:
-                #     value = float(value)
-                list_temp.append(value)
-            list1.append(list_temp)
-        file.close()
-        create_newSheet(i, j, list1)
-
-
-def create_newSheet(rows, cols, data):
-    # new_sheet = Sheet(rows, cols)
-    # for i in range(rows):
-    #     for j in range(cols):
-    #         new_sheet.updateValue(i, j, data[i][j])
-    # Run(rows, cols, data)
-    print("hi")
-
-# class ControlSheet():
-
-
-
-
 
     def __str__(self):
         return self.matrix.__str__()
