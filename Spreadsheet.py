@@ -161,7 +161,7 @@ class Sheet(object):
                 self.matrix.setElementAt(row, col, cellObject)
             if (prev[0] == "searchAndReplace"):
                 amount = prev[1]
-                print amount
+                print (amount)
                 while amount > 0:
                     self.redo()
                     amount -= 1
@@ -250,6 +250,6 @@ class Sheet(object):
         return cell.value
 
     def __str__(self):
-        print "undo's: ", len(self.undoStack), " redo's: ", len(self.redoStack)
+        print ("undo's: ", len(self.undoStack), " redo's: ", len(self.redoStack))
         return self.matrix.__str__()
 

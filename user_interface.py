@@ -24,9 +24,10 @@ class Table(tk.Frame):
         current_row = []
         headers_some = [self.sheet.intToColName(i) for i in range(self.sheet.getCols())]
         i = 0
+        self.font = tkFont.Font(weight='bold')
         for header in headers_some:
-            label = tk.Label(self, text="%s" % header, borderwidth=3, width=10)
-            label.grid(row=2, column=i+1, padx=1, pady=1)
+            label = tk.Label(self, text="%s" % header, borderwidth=2, relief="groove", width=10, font=self.font)
+            label.grid(row=2, column=i+1)
             i += 1
             current_row.append(label)
         self._widgets.append(current_row)
@@ -35,13 +36,13 @@ class Table(tk.Frame):
         for row in range(1, self.sheet.getRows()+1):
             current_row = []
             self._tree.insert('', 'end', values=row+1)
-            label = tk.Label(self, text="%s" % j, borderwidth=0, width=10)
-            label.grid(row=row + 2, column=0, padx=1, pady=1)
+            label = tk.Label(self, text="%s" % j, borderwidth=2, relief="groove", width=10, font=self.font)
+            label.grid(row=row + 2, column=0)
             current_row.append(label)
             j += 1
             for column in range(self.sheet.getCols()):
-                label = tk.Label(self, text="%s" % self.sheet.getValue(row-1, column), borderwidth=0, width=10)
-                label.grid(row=row+3-1, column=column+1, padx=1, pady=1)
+                label = tk.Label(self, text="%s" % self.sheet.getValue(row-1, column), borderwidth=2, relief="groove", width=10)
+                label.grid(row=row+3-1, column=column+1)
                 current_row.append(label)
             self._widgets.append(current_row)
 
@@ -60,16 +61,16 @@ class RunInterface(tk.Tk):
         self.cell_input = tk.Entry(self, textvariable="", width=30)
         self.formula_label = tk.Label(self, text="Formula:", font=self.font)
         self.formula_input = tk.Entry(self, textvariable="", width=30)
-        self.button_run = tk.Button(self, text="Run", command=self.run_sheet, height=1, width=8)
+        self.button_run = tk.Button(self, text="Run", command=self.run_sheet, height=2, width=8)
         self.button_undo = tk.Button(self, text="Undo", command=self.undo_sheet, height=2, width=8)
         self.button_redo = tk.Button(self, text="Redo", command=self.redo_sheet, height=2, width=8)
-        self.button_searchAndReplace = tk.Button(self, text="search & replace", command=self.searchAndReplace_sheet, height=1, width=20)
+        self.button_searchAndReplace = tk.Button(self, text="search & replace", command=self.searchAndReplace_sheet, height=2, width=20)
         self.cell_search = tk.Entry(self, textvariable="Search", width=30)
         self.cell_replace = tk.Entry(self, textvariable="Replace", width=30)
         self.search_label = tk.Label(self, text="Search value:", font=self.font)
         self.replace_label = tk.Label(self, text="Replacement value:", font=self.font)
         self.file_label = tk.Label(self, text="File:", font=self.font)
-        self.file_input = tk.Entry(self, textvariable="", width=60)
+        self.file_input = tk.Entry(self, textvariable="", width=61)
         self.button_import = tk.Button(self, text="Import", command=self.import_file, height=2, width=8)
         self.button_export = tk.Button(self, text="Export", command=self.export_file, height=2, width=8)
         # self.starting()
@@ -81,19 +82,19 @@ class RunInterface(tk.Tk):
         self.formula_label.grid(row=0, column=2, sticky=tk.W)
         self.cell_input.grid(row=1, column=1, sticky=tk.W)
         self.formula_input.grid(row=1, column=2, sticky=tk.W)
-        self.button_run.grid(row=1, column=3, rowspan=1)
-        self.button_undo.grid(row=0, column=5, rowspan=2)
-        self.button_redo.grid(row=0, column=7, rowspan=2)
-        self.button_searchAndReplace.grid(row=3, column=3, rowspan=1)
+        self.button_run.grid(row=0, column=3, rowspan=2, sticky=tk.S)
+        self.button_undo.grid(row=0, column=4, rowspan=2, sticky=tk.S)
+        self.button_redo.grid(row=0, column=5, rowspan=2, sticky=tk.S)
         self.search_label.grid(row=2, column=1, sticky=tk.W)
         self.replace_label.grid(row=2, column=2, sticky=tk.W)
         self.cell_search.grid(row=3, column=1, sticky=tk.W)
         self.cell_replace.grid(row=3, column=2, sticky=tk.W)
+        self.button_searchAndReplace.grid(row=2, column=3, rowspan=2, columnspan=3,  sticky=tk.S+tk.W)
 
-        self.file_label.grid(row=2, column=1, sticky=tk.W)
-        self.file_input.grid(row=3, column=1, sticky=tk.W, columnspan=2)
-        self.button_import.grid(row=2, column=3, rowspan=2, sticky=tk.S)
-        self.button_export.grid(row=2, column=4, rowspan=2, sticky=tk.S)
+        self.file_label.grid(row=5, column=1, sticky=tk.W)
+        self.file_input.grid(row=6, column=1, sticky=tk.W, columnspan=2)
+        self.button_import.grid(row=5, column=3, rowspan=2, sticky=tk.S+tk.W)
+        self.button_export.grid(row=5, column=4, rowspan=2, sticky=tk.S+tk.W)
 
         self.sheet_table.grid(row=7, column=1, columnspan=4)
         # self.sheet_table.grid(row=4, column=1, columnspan=4)
