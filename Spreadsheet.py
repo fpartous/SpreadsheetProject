@@ -15,17 +15,27 @@ class NumberCell(object):
     def updateValue(self):
         #print(self.coordinates, " got updated")
         return True
+    def getDependencyList(self):
+        return []
 
 
 class FormulaCell(object):
     def __init__(self, expr, sheet, coordinates):  # expr is of the shape "=A1+B2" in string
+        self.cellType = "FormulaCell"
         self._sheet = sheet
         self.formula = expr
         self.ListOfDependencies = []    # List of cells upon which the current cell depends
         self.createDependencyList()
         self.coordinates = coordinates
-        self.updateValue()
-        self.cellType = "FormulaCell"
+        if self.checkLoops():
+            print("loops present")
+
+        else:
+            print("no loops present")
+            self.updateValue()
+
+
+
 
     def updateValue(self):
         for coord in self.ListOfDependencies: # make sure all cells this one depends on update their values first
@@ -35,7 +45,25 @@ class FormulaCell(object):
             self.value = eval(self.addCalls(self.formula[1:]))
         else:
             self.value = eval(self.addCalls(self.formula[0:]))
+        return True
         #print(self.coordinates, " got updated")
+
+    def checkLoops(self):
+        loopCheckQueue = self.ListOfDependencies[:]
+        while len(loopCheckQueue) > 0:
+            depCoord = loopCheckQueue.pop(0)
+            if depCoord == self.coordinates:
+                return True
+            if depCoord == []:
+                continue
+            lod = self._sheet.getValue(depCoord[0], depCoord[1]).getDependencyList()
+            loopCheckQueue = loopCheckQueue + lod
+        return False
+
+
+
+    def getDependencyList(self):
+        return self.ListOfDependencies[:]
 
     def createDependencyList(self):  # look for all dependencies in the formula
         input = self.formula[0:]

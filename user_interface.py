@@ -124,6 +124,7 @@ class RunInterface(tk.Tk):
         if len(cell_split) > 1:
             pos_x = int(cell_split[0])
             pos_y = int(cell_split[1])
+            print("test")
             self.sheet.updateValue(pos_x, pos_y, formula)
             # self.sheet_table.set(pos_x, pos_y, self.sheet.getValue(pos_x, pos_y))
             self.sheet_table.showTable()
