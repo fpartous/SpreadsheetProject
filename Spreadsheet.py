@@ -124,6 +124,7 @@ class Sheet(object):
                 self.updateValue(row, col, "0")
         self.undoStack = []
         self.redoStack = []
+
     def coordstringToRowCol(self, coordinate_string): #input is for example AB12, output is then [12, 27]
         p_letters = re.compile('[A-Z]+')
         p_numbers = re.compile('[1-9][0-9]*')
@@ -237,6 +238,20 @@ class Sheet(object):
 
     def getData(self):
         return self.matrix.data
+
+    def addCol(self):
+        self.matrix.addCol()
+        for row in range(self.rows):
+            for column in range(self.cols, self.cols+1):
+                self.updateValue(row, column, "0")
+        self.cols = self.cols+1
+
+    def addRow(self):
+        self.matrix.addRow()
+        for row in range(self.rows, self.rows+1):
+            for column in range(self.cols):
+                self.updateValue(row, column, "0")
+        self.rows = self.rows+1
 
     def lookup(self, x):
         p = re.compile('[A-Z]+')

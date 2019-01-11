@@ -30,6 +30,20 @@ class Matrix(object):
         resultString = ''.join(result)
         return resultString
 
+    def addCol(self):
+        for row in range(self.height):
+            for col in range(self.width+1, self.width+2):
+                self.data[row].append(0)
+        self.width += 1
+
+    def addRow(self):
+        for row in range(self.height, self.height+1):
+            self.data.append([])
+            for col in range(self.width):
+                self.data[row].append(0)
+
+        self.height +=1
+
     def __str__(self):
         result = []
         result.append('\t')

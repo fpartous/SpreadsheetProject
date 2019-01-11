@@ -61,18 +61,23 @@ class RunInterface(tk.Tk):
         self.cell_input = tk.Entry(self, textvariable="", width=30)
         self.formula_label = tk.Label(self, text="Formula:", font=self.font)
         self.formula_input = tk.Entry(self, textvariable="", width=30)
-        self.button_run = tk.Button(self, text="Run", command=self.run_sheet, height=2, width=8)
-        self.button_undo = tk.Button(self, text="Undo", command=self.undo_sheet, height=2, width=8)
-        self.button_redo = tk.Button(self, text="Redo", command=self.redo_sheet, height=2, width=8)
-        self.button_searchAndReplace = tk.Button(self, text="search & replace", command=self.searchAndReplace_sheet, height=2, width=20)
+        self.button_run = tk.Button(self, text="Run", command=self.run_sheet, height=2, width=11)
+        self.button_undo = tk.Button(self, text="Undo", command=self.undo_sheet, height=2, width=11)
+        self.button_redo = tk.Button(self, text="Redo", command=self.redo_sheet, height=2, width=11)
+        self.button_searchAndReplace = tk.Button(self, text="search & replace", command=self.searchAndReplace_sheet, height=2, width=21)
         self.cell_search = tk.Entry(self, textvariable="Search", width=30)
         self.cell_replace = tk.Entry(self, textvariable="Replace", width=30)
         self.search_label = tk.Label(self, text="Search value:", font=self.font)
         self.replace_label = tk.Label(self, text="Replacement value:", font=self.font)
         self.file_label = tk.Label(self, text="File:", font=self.font)
         self.file_input = tk.Entry(self, textvariable="", width=61)
-        self.button_import = tk.Button(self, text="Import", command=self.import_file, height=2, width=8)
-        self.button_export = tk.Button(self, text="Export", command=self.export_file, height=2, width=8)
+        self.button_import = tk.Button(self, text="Import", command=self.import_file, height=2, width=11)
+        self.button_export = tk.Button(self, text="Export", command=self.export_file, height=2, width=11)
+        self.button_addCols = tk.Button(self, text="Add Columns", command=self.add_cols, height=2, width=11)
+        self.button_addRows = tk.Button(self, text="Add Rows", command=self.add_rows, height=2, width=11)
+        self.blank_space = tk.Label(self)
+        self.blank_space1 = tk.Label(self)
+
         # self.starting()
         self.sheet_table = Table(self, self.sheet, height=self.sheet.getRows(), title="Sheet")
         self.show_grid()
@@ -95,9 +100,12 @@ class RunInterface(tk.Tk):
         self.file_input.grid(row=6, column=1, sticky=tk.W, columnspan=2)
         self.button_import.grid(row=5, column=3, rowspan=2, sticky=tk.S+tk.W)
         self.button_export.grid(row=5, column=4, rowspan=2, sticky=tk.S+tk.W)
+        self.blank_space.grid(row=7, column=1)
+        self.button_addCols.grid(row=8, column=3, rowspan=2, sticky=tk.S+tk.W)
+        self.button_addRows.grid(row=8, column=4, rowspan=2, sticky=tk.S+tk.W)
+        self.blank_space1.grid(row=10, column=1)
 
-        self.sheet_table.grid(row=7, column=1, columnspan=4)
-        # self.sheet_table.grid(row=4, column=1, columnspan=4)
+        self.sheet_table.grid(row=12, column=1, columnspan=4)
 
     def starting(self):
         # x = Sheet(30, 4)
@@ -145,6 +153,14 @@ class RunInterface(tk.Tk):
         self.sheet_table.showTable()
     def searchAndReplace_sheet(self):
         self.sheet.searchAndReplace(int(self.cell_search.get()), int(self.cell_replace.get()))
+        self.sheet_table.showTable()
+
+    def add_cols(self):
+        self.sheet.addCol()
+        self.sheet_table.showTable()
+
+    def add_rows(self):
+        self.sheet.addRow()
         self.sheet_table.showTable()
 
 '''

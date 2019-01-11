@@ -47,7 +47,7 @@ print(s)
 # if __name__ == "__main__":
 #     app = Run.create_sheet(30, 4)
 #     app.mainloop()
-Run(30, 4)
+Run(10, 4)
 
 
 
